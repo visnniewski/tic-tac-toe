@@ -1,8 +1,9 @@
 import pygame
+from scripts import bot
 
 class gameplay(object):
-    def __init__(self, size, win, winsize):
-        self.size, self.win, self.winsize = size, win, winsize
+    def __init__(self, size, win, winsize, mode="multi"):
+        self.size, self.win, self.winsize, self.mode = size, win, winsize, mode
         self.font = pygame.font.SysFont('arial', int(size / 5) - 5, True)
         self.xs, self.os = [], []
         self.board = [
@@ -10,6 +11,8 @@ class gameplay(object):
             ['', '', ''],
             ['', '', '']
         ]
+        if self.mode == "single":
+            self.bot = bot.bot()
         self.turn = 'x'
         self.winner, self.ocp, self.text = 0, 0, 0
 
@@ -36,21 +39,40 @@ class gameplay(object):
         pygame.display.update()
 
     # check where mouse clicked and place x or o
-    def mPressed(self) :
-        for x in range(3) :
-            for y in range(3) :
-                if self.mpos[0] <= self.size + self.size * x - 1 and self.mpos[1] <= self.size + self.size * y - 1 and self.mpos[0] >= self.size * x and self.mpos[1] >= self.size * y :
-                    if self.ocp != 9 and self.board[y][x] == '' :
-                        if self.turn == "x" :
+    def mPressed(self):
+        for x in range(3):
+            for y in range(3):
+                if self.mode == "multi":
+                    if self.ocp != 9 and self.board[y][x] == '' and self.colide(x, y):
+                        if self.turn == "x":
                             self.turn = "o"
                             self.board[y][x] = 'x'
                             self.xs.append([x, y])
                             self.ocp += 1
-                        elif self.turn == "o" :
+                        elif self.turn == "o":
                             self.turn = "x"
                             self.board[y][x] = 'o'
                             self.os.append([x, y])
                             self.ocp += 1
+                else:
+                    if self.turn == "x":
+                        if self.ocp != 9 and self.board[y][x] == '' and self.colide(x, y):
+                            self.turn = "o"
+                            self.board[y][x] = 'x'
+                            self.xs.append([x, y])
+                            self.ocp += 1
+                    else:
+                        p = self.bot.update(self.os, self.xs)
+                        if p[0]:
+                            self.turn = "x"
+                            self.board[p[2]][p[1]] = 'o'
+                            self.os.append([p[1], p[2]])
+                            self.ocp += 1
+
+    #mosue colaiding?
+    def colide(self, x, y):
+        if self.mpos[0] <= self.size + self.size * x - 1 and self.mpos[1] <= self.size + self.size * y - 1 and self.mpos[0] >= self.size * x and self.mpos[1] >= self.size * y:
+            return True
     #draw all x and o
     def drawCNC(self, xs, os):
         for x in xs:

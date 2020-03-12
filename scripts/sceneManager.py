@@ -1,4 +1,4 @@
-from scripts import gameplay
+from scripts import gameplay, menu
 
 class scene(object):
     def __init__(self, scene, win, size, winsize):
@@ -12,7 +12,9 @@ class scene(object):
 
     def update(self):
         if self.scene == "menu":
-            pass
-        elif self.scene == "gameplay":
+            self.sc = menu.menu(self.size, self.win, self.winsize)
+        if self.scene == "multi-player":
             self.sc = gameplay.gameplay(self.size, self.win, self.winsize)
+        if self.scene == "single-player":
+            self.sc = gameplay.gameplay(self.size, self.win, self.winsize, "single")
 
