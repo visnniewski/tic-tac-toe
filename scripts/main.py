@@ -39,7 +39,7 @@ class main(object):
                 if event.type == pygame.KEYUP:
                     if self.sm.scene == "multi-player" or self.sm.scene == "single-player":
                         if event.key == pygame.K_SPACE and self.sm.sc.winner == 'x' or self.sm.sc.winner == 'o' or self.sm.sc.winner == 't':
-                            self.sm.sc.winner, self.sm.sc.ocp = 0, 0
+                            self.sm.sc.winner, self.sm.sc.ocp, self.sm.sc.turn = 0, 0, 'x'
                             self.sm.sc.board = [['', '', ''], ['', '', ''], ['', '', '']]
                             self.sm.sc.xs, self.sm.sc.os = [], []
                         if event.key == pygame.K_ESCAPE:
