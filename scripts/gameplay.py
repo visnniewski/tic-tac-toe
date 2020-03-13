@@ -1,5 +1,4 @@
-import pygame
-from scripts import bot
+import pygame, random
 
 class gameplay(object):
     def __init__(self, size, win, winsize, mode="multi"):
@@ -11,8 +10,6 @@ class gameplay(object):
             ['', '', ''],
             ['', '', '']
         ]
-        if self.mode == "single":
-            self.bot = bot.bot()
         self.turn = 'x'
         self.winner, self.ocp, self.text = 0, 0, 0
 
@@ -36,6 +33,8 @@ class gameplay(object):
             self.text = self.font.render(f"{self.winner.upper()} won the game. Press space to play again", True, (10, 10, 10))
         if self.ocp == 9:
             self.winner = 't'
+        if self.turn == 'o':
+            self.mPressed()
         pygame.display.update()
 
     # check where mouse clicked and place x or o
@@ -44,30 +43,43 @@ class gameplay(object):
             for y in range(3):
                 if self.mode == "multi":
                     if self.ocp != 9 and self.board[y][x] == '' and self.colide(x, y):
-                        if self.turn == "x":
-                            self.turn = "o"
+                        if self.turn == 'o':
+                            self.turn = 'o'
                             self.board[y][x] = 'x'
                             self.xs.append([x, y])
                             self.ocp += 1
-                        elif self.turn == "o":
-                            self.turn = "x"
+                        elif self.turn == 'o':
+                            self.turn = 'x'
                             self.board[y][x] = 'o'
                             self.os.append([x, y])
                             self.ocp += 1
                 else:
-                    if self.turn == "x":
+                    if self.turn == 'x':
                         if self.ocp != 9 and self.board[y][x] == '' and self.colide(x, y):
-                            self.turn = "o"
+                            self.turn = 'o'
                             self.board[y][x] = 'x'
                             self.xs.append([x, y])
                             self.ocp += 1
-                    else:
-                        p = self.bot.update(self.os, self.xs)
-                        if p[0]:
-                            self.turn = "x"
-                            self.board[p[2]][p[1]] = 'o'
-                            self.os.append([p[1], p[2]])
-                            self.ocp += 1
+                    elif self.turn == 'o':
+                        self.bot()
+    def bot(self):
+        should_restart = True
+        var = []
+        while should_restart :
+            var1, var2 = random.randint(0, 2), random.randint(0, 2)
+            should_restart = False
+            for g in self.xs :
+                if g[0] == var1 and g[1] == var2 :
+                    should_restart = True
+            for g in self.xs :
+                if g[0] == var1 and g[1] == var2 :
+                    should_restart = True
+            var = [var1, var2]
+        if self.ocp != 9 and self.board[var[1]][var[0]] == '' :
+            self.turn = 'x'
+            self.board[var[1]][var[0]] = 'o'
+            self.os.append([var[0], var[1]])
+            self.ocp += 1
 
     #mosue colaiding?
     def colide(self, x, y):
